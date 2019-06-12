@@ -1,16 +1,34 @@
 import React from 'react';
 import {connect} from "react-redux"
-import {loginStart, logoutStart} from "../redux/auth/auth.actions"
+import styled from 'styled-components'
+import {loginStart} from "../redux/auth/auth.actions"
+
+const Button = styled.a`
+  padding: 2px 5px;
+  border: 1px solid ${props => props.theme.cFront};
+  border-radius: 4px;
+  
+  &:hover {
+    background-color: ${props => props.theme.cFront};
+    border: 1px solid ${props => props.theme.cFront};
+    color: ${props => props.theme.cBack};
+    cursor: pointer;
+  }
+`
 
 const LoggedOut = (props) => (
-  <div>
+  <>
     <h2>Logout complete!</h2>
-    <p>Please <button onClick={props.login}>Login</button> again to use this site. or go to <button onClick={()=>{props.history.push('home')}}>Home</button></p>
-  </div>
+    <p>Please <Button onClick={props.login}>Login</Button> again to use this site,
+      {props.redirectUrl && (<>go back to your <Button onClick={()=>{props.history.push(props.redirectUrl)}}>previous page</Button>,</>)}
+      or go to <Button onClick={()=>{props.history.push('home')}}>Home</Button></p>
+  </>
 )
-
+const mapStateToProps = state => ({
+  redirectUrl: state.auth.redirectUrl
+})
 const mapDispatchToProps = dispatch => ({
   login: () => dispatch(loginStart()),
 })
 
-export default connect(null, mapDispatchToProps)(LoggedOut)
+export default connect(mapStateToProps, mapDispatchToProps)(LoggedOut)

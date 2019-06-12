@@ -1,13 +1,14 @@
-import { select, call, put, takeEvery } from 'redux-saga/effects';
+import { select, put, takeEvery } from 'redux-saga/effects';
 
 import {
   LOGIN_START,
   LOGIN_CALLBACK,
-  loginSuccess,
+  updateAuth,
   loginError,
   LOGOUT_START,
   logoutSuccess,
   logoutError,
+  CHANGE_PASSWORD_START, CHECK_SESSION, UPDATE_USER_START, setRedirectUrl, updateUserInfo,
 } from './auth.actions'
 
 function* startLoginSaga() {
@@ -26,8 +27,8 @@ function* startLoginSaga() {
 function* loginCallbackSaga({ payload: history}) {
   try {
     const { auth } = yield select();
-    const authResult = yield promiseParseHash(auth.auth0)
-    yield put(loginSuccess(authResult));
+    const authResult = yield auth.auth0.parseHash()
+    yield put(updateAuth(authResult));
     history.replace('/home');
   } catch (error) {
     console.error('Error handling login', error);
@@ -36,10 +37,11 @@ function* loginCallbackSaga({ payload: history}) {
   }
 }
 
-function* startLogoutSaga({ payload: history}) {
+function* startLogoutSaga({payload: redirectUrl}) {
   try {
     const { auth } = yield select();
 
+    yield put(setRedirectUrl(redirectUrl))
     auth.auth0.logout({});
     yield put(logoutSuccess());
   } catch (error) {
@@ -48,15 +50,62 @@ function* startLogoutSaga({ payload: history}) {
   }
 }
 
-function promiseParseHash(auth0) {
-  return new Promise((resolve, reject) => {
-    auth0.parseHash((err, authResult) => {
-      if (err) {
-        reject(err)
-      }
-      resolve(authResult);
-    })
-  })
+function* startChangePassword() {
+  try {
+    console.log('Change password start')
+    const { auth } = yield select()
+
+    const result = yield auth.auth0.changePassword({
+      connection: 'Username-Password-Authentication',
+      email: 'rob_dl@hotmail.com',
+    });
+
+    console.log(result)
+  } catch (error) {
+    console.log('Error logging out the user', error)
+  }
+}
+
+function* startCheckSession() {
+  try {
+    const { auth } = yield select()
+
+    if (1*auth.expiresAt < Date.now()) {
+      const checkResult = yield auth.auth0.checkSession({
+        scope: 'openid profile email update:current_user_metadata user_metadata'
+      })
+      console.log('Updating things')
+      yield put(updateAuth(checkResult));
+      return
+    }
+
+    if (1*auth.expiresAt < (Date.now() + (45 * 1000))) {
+      const checkResult = yield auth.auth0.checkSession({
+        scope: 'openid profile email update:current_user_metadata user_metadata'
+      })
+      console.log('Updating things')
+      yield put(updateAuth(checkResult));
+      return
+    }
+
+  } catch (error) {
+    yield put(logoutError(error));
+    console.log('Error logging out the user', error)
+  }
+}
+
+function* startUpdateUser() {
+  try {
+    const { auth } = yield select()
+
+    const userInfo = yield auth.auth0.userInfo(auth.accessToken)
+    yield put(updateUserInfo(userInfo))
+    console.log(userInfo)
+
+  } catch (error) {
+    yield put(logoutError(error));
+    console.log('Error updating user data', error)
+  }
 }
 
 export function* watchStartLogin() {
@@ -69,4 +118,16 @@ export function* watchLoginCallback() {
 
 export function* watchStartLogout() {
   yield takeEvery(LOGOUT_START, startLogoutSaga);
+}
+
+export function* watchChangePassword() {
+  yield takeEvery(CHANGE_PASSWORD_START, startChangePassword);
+}
+
+export function* watchCheckSession() {
+  yield takeEvery(CHECK_SESSION, startCheckSession);
+}
+
+export function* watchUpdateUser() {
+  yield takeEvery(UPDATE_USER_START, startUpdateUser);
 }
