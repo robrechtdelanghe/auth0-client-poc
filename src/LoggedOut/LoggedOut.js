@@ -16,6 +16,10 @@ const Button = styled.a`
   }
 `
 
+const Paragraph = styled.p`
+line-height: 2em;
+`
+
 const LoggedOut = (props) => {
   const dispatch = useDispatch()
   const redirectUrl = useSelector(state => state.auth.redirectUrl)
@@ -24,12 +28,12 @@ const LoggedOut = (props) => {
   return (
     <>
       <h2>Logout complete!</h2>
-      <p>Please <Button onClick={login}>Login</Button> again to use this site,
+      <Paragraph>Please <Button onClick={login}>Login</Button> again to use this site,
         {redirectUrl && (<>go back to your <Button onClick={() => {
           props.history.push(redirectUrl)
         }}>previous page</Button>,</>)} or go to <Button onClick={() => {
           props.history.push('home')
-        }}>Home</Button></p>
+        }}>Home</Button></Paragraph>
     </>
   )
 }
