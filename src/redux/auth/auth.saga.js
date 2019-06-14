@@ -8,7 +8,12 @@ import {
   LOGOUT_START,
   logoutSuccess,
   logoutError,
-  CHANGE_PASSWORD_START, CHECK_SESSION, UPDATE_USER_START, setRedirectUrl, updateUserInfo,
+  CHANGE_PASSWORD_START,
+  CHECK_SESSION,
+  UPDATE_USER_START,
+  setRedirectUrl,
+  updateUserInfo,
+  sessionChecked, checkSession,
 } from './auth.actions'
 
 function* startLoginSaga() {
@@ -20,7 +25,7 @@ function* startLoginSaga() {
     });
   } catch (error) {
     yield put(logoutError(error));
-    console.log('Error logging out the user', error)
+    console.error('Error logging out the user', error)
   }
 }
 
@@ -46,23 +51,22 @@ function* startLogoutSaga({payload: redirectUrl}) {
     yield put(logoutSuccess());
   } catch (error) {
     yield put(logoutError(error));
-    console.log('Error logging out the user', error)
+    console.error('Error logging out the user', error)
   }
 }
 
 function* startChangePassword() {
   try {
-    console.log('Change password start')
     const { auth } = yield select()
 
     const result = yield auth.auth0.changePassword({
       connection: 'Username-Password-Authentication',
-      email: 'rob_dl@hotmail.com',
+      email: auth.user.email,
     });
 
     console.log(result)
   } catch (error) {
-    console.log('Error logging out the user', error)
+    console.error('Error logging out the user', error)
   }
 }
 
@@ -74,8 +78,8 @@ function* startCheckSession() {
       const checkResult = yield auth.auth0.checkSession({
         scope: 'openid profile email update:current_user_metadata user_metadata'
       })
-      console.log('Updating things')
       yield put(updateAuth(checkResult));
+      yield put(sessionChecked())
       return
     }
 
@@ -83,14 +87,16 @@ function* startCheckSession() {
       const checkResult = yield auth.auth0.checkSession({
         scope: 'openid profile email update:current_user_metadata user_metadata'
       })
-      console.log('Updating things')
       yield put(updateAuth(checkResult));
+      yield put(sessionChecked())
       return
     }
 
+    yield put(sessionChecked())
+
   } catch (error) {
     yield put(logoutError(error));
-    console.log('Error logging out the user', error)
+    console.error('Error logging out the user', error)
   }
 }
 
@@ -100,11 +106,9 @@ function* startUpdateUser() {
 
     const userInfo = yield auth.auth0.userInfo(auth.accessToken)
     yield put(updateUserInfo(userInfo))
-    console.log(userInfo)
-
   } catch (error) {
-    yield put(logoutError(error));
-    console.log('Error updating user data', error)
+    yield put(checkSession(error));
+    console.warn('Error updating user data, check session', error)
   }
 }
 

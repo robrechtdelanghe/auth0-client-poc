@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from "styled-components"
-import {connect} from "react-redux"
-import {changePassword, updateUser} from "../redux/auth/auth.actions"
-import {isAuthenticated, user, expiresAt} from "../redux/auth/auth.selector"
-
+import {useDispatch, useSelector} from "react-redux"
+import {changePassword, checkSession, updateUser} from "../redux/auth/auth.actions"
+import {isAuthenticated, user, expiresAtSelector} from "../redux/auth/auth.selector"
 
 const Button = styled.a`
   padding: 2px 5px;
@@ -19,39 +18,62 @@ const Button = styled.a`
 `
 const ButtonList = styled.ul`
   list-style: none;
-  
   li { 
     height:30px;
   }
 `
-const Home = (props) => (
-  <div>
-    {!props.isAuthenticated && (<h2>Not logged in</h2>)}
-    {props.isAuthenticated && (
-      <>
-        <h2>Welcome {props.user.name || props.user.nickname}</h2>
-        <ul>
-          <li>E-mail: {props.user.email}</li>
-          <li>Exp time: {new Date(1*props.expiresAt).toISOString()}</li>
-        </ul>
-        <ButtonList>
-          <li><Button onClick={props.updateUser}>Update user</Button></li>
-          <li><Button onClick={props.changePassword}>Change Password</Button></li>
-        </ButtonList>
-      </>
-    )}
-  </div>
-)
+const Home = (props) => {
+  const { user, isAuthenticated, expiresAt } = getState(props)
+  const { changePassword, updateUser, checkSession} = getDispatchers()
 
-const mapStateToProps = state => ({
-  user: user(state),
-  expiresAt: expiresAt(state),
-  isAuthenticated: isAuthenticated(state),
+  return (
+    <div>
+      {!isAuthenticated && (<h2>Not logged in</h2>)}
+      {isAuthenticated && (
+        <>
+          <h2>Welcome {user.name || user.nickname}</h2>
+          <ul>
+            <li>E-mail: {user.email}</li>
+            <li>Exp time: {new Date(1*expiresAt).toISOString()}</li>
+            <li>Expires in <Timer />s</li>
+          </ul>
+          <ButtonList>
+            <li><Button onClick={updateUser}>Update user</Button></li>
+            <li><Button onClick={changePassword}>Change Password</Button></li>
+            <li><Button onClick={checkSession}>Check session</Button></li>
+          </ButtonList>
+        </>
+      )}
+    </div>
+  )
+}
+
+const Timer = () => {
+  const { expiresAt = Date.now() } = getState()
+  const [time, setTime] = useState(useSelector(expiresAtSelector) - Date.now())
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime(expiresAt - Date.now())
+    }, 500)
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [expiresAt])
+
+  return Math.round(time/1000)
+}
+
+const getState = (props) => ({
+  user: useSelector(user),
+  expiresAt: useSelector(expiresAtSelector),
+  isAuthenticated: useSelector(isAuthenticated),
 })
 
-const mapDispatchToProps = dispatch => ({
+const getDispatchers = (dispatch = useDispatch()) => ({
   changePassword: () => dispatch(changePassword()),
   updateUser: () => dispatch(updateUser()),
+  checkSession: () => dispatch(checkSession()),
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home

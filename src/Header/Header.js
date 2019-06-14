@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
-import {setLanguage} from "../redux/settings/settings.actions"
+import {setLanguage, setApi} from "../redux/settings/settings.actions"
 import {loginStart, logoutStart} from "../redux/auth/auth.actions"
 import {isAuthenticated, nickname} from "../redux/auth/auth.selector"
 
@@ -70,7 +70,7 @@ const Select = styled.select`
   font-size: 14px;
   margin-right: 10px;
   padding: 5px; /* If you add too much padding here, the options won't show in IE */
-  width: 55px;
+  width: ${props => props.width || '55px'};
   
   option {
     background-color: ${props => props.theme.cBack};
@@ -90,6 +90,12 @@ const Header = (props) => (
         <option value="de">DE</option>
       </Select>
     </NavItem>
+    <NavItem>
+      <Select onChange={(e) => props.setApi(e.target.value)} value={props.api} width="100px">
+        <option value="delijn">De Lijn</option>
+        <option value="auth0">Auth0</option>
+      </Select>
+    </NavItem>
     {!props.isAuthenticated && <Login onClick={props.login}>Login</Login>}
     {props.isAuthenticated && <Login onClick={() => props.logout(props.history.location.pathname)}>Logout</Login>}
   </NavBar>
@@ -97,12 +103,14 @@ const Header = (props) => (
 
 const mapStateToProps = (state) => ({
   language: state.settings.language,
+  api: state.settings.api,
   isAuthenticated: isAuthenticated(state),
   nickname: nickname(state),
 })
 
 const mapDispatchToProps = dispatch => ({
   setLang: (language) => dispatch(setLanguage(language)),
+  setApi: (api) => dispatch(setApi(api)),
   login: () => dispatch(loginStart()),
   logout: (redirectUrl) => dispatch(logoutStart(redirectUrl)),
 })

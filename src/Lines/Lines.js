@@ -109,6 +109,7 @@ const mapStateToProps = state => ({
   lines: lines(state),
   isAuthenticated: isAuthenticated(state),
 })
+
 const mapDispatchToProps = dispatch => ({
   addLine: (linenumber, subscribed) => dispatch(addLine(linenumber, subscribed)),
   deleteLine: linenumber => dispatch(deleteLine(linenumber)),

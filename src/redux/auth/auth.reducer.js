@@ -1,10 +1,13 @@
 import {
-  LOAD_STORAGE,
+  LOAD_AUTH_STORAGE,
   UPDATE_AUTH,
   LOGIN_ERROR,
   LOGOUT_ERROR,
   LOGOUT_SUCCESS,
-  CHANGE_PASSWORD_START, SET_REDIRECT_URL, UPDATE_USER_INFO
+  CHANGE_PASSWORD_START,
+  SET_REDIRECT_URL,
+  UPDATE_USER_INFO,
+  SESSION_CHECKED
 } from './auth.actions'
 import {ADD_LINE_SUCCESS, DELETE_LINE_SUCCESS} from './../data/data.actions'
 import {createWebAuthPromise} from "./WebAuthPromise"
@@ -13,13 +16,14 @@ const auth0 = createWebAuthPromise();
 
 const authReducer = (state = { auth0 }, {type, payload}) => {
   switch (type) {
-    case LOAD_STORAGE: {
+    case LOAD_AUTH_STORAGE: {
       return {
         ...state,
         expiresAt: localStorage.getItem('expires_at'),
         user: JSON.parse(localStorage.getItem('user_info')),
         accessToken: localStorage.getItem('access_token'),
         redirectUrl: localStorage.getItem('redirectUrl'),
+        storageLoaded: true,
       }
     }
     case UPDATE_AUTH: {
@@ -94,6 +98,12 @@ const authReducer = (state = { auth0 }, {type, payload}) => {
       return {
         ...state,
         redirectUrl: payload,
+      }
+    }
+    case SESSION_CHECKED: {
+      return {
+        ...state,
+        sessionChecked: true,
       }
     }
     default:

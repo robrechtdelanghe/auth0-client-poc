@@ -1,4 +1,4 @@
-export const LOAD_STORAGE = 'LOAD_STORAGE'
+export const LOAD_AUTH_STORAGE = 'LOAD_AUTH_STORAGE'
 
 export const LOGIN_START = 'LOGIN_START'
 export const LOGIN_CALLBACK = 'LOGIN_CALLBACK'
@@ -13,13 +13,14 @@ export const LOGOUT_ERROR = 'LOGOUT_ERROR'
 export const CHANGE_PASSWORD_START = 'CHANGE_PASSWORD_START'
 
 export const CHECK_SESSION = 'CHECK_SESSION'
+export const SESSION_CHECKED = 'SESSION_CHECKED'
 
 export const UPDATE_USER_START = 'UPDATE_USER_START'
 
 export const SET_REDIRECT_URL = 'SET_REDIRECT_URL'
 
-export const loadStorage = () => ({
-  type: LOAD_STORAGE
+export const loadAuthStorage = () => ({
+  type: LOAD_AUTH_STORAGE
 })
 
 export const loginStart = () => ({
@@ -65,6 +66,10 @@ export const changePassword = () => ({
 
 export const checkSession = () => ({
   type: CHECK_SESSION,
+})
+
+export const sessionChecked = () => ({
+  type: SESSION_CHECKED,
 })
 
 export const updateUser = () => ({

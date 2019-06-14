@@ -8,14 +8,19 @@ import {
 import auth0 from "auth0-js"
 import {AUTH_CONFIG} from "../auth/auth.variables"
 
-function* addLine({payload}) {
+function* addLine2({payload}) {
   try {
     const { auth } = yield select()
 
-    const management = new auth0.Management({
-      domain: AUTH_CONFIG.domain,
-      token: auth.accessToken,
-    });
+    // console.log(json)
+  } catch (error) {
+    yield put(addLineError(error));
+    console.log('Error adding line', error)
+  }
+}
+function* addLine({payload}) {
+  try {
+    const { auth, settings } = yield select()
 
     const lines = auth.user.user_metadata.lines || {}
     lines[payload.linenumber] = {
@@ -23,9 +28,34 @@ function* addLine({payload}) {
       subscribed: payload.subscribed || false,
     }
 
-    const result = yield promisePatchUserMedadata(management, auth.user.sub, { lines })
+    switch (settings.apiSource) {
+      case "delijn": {
+        const json = yield fetch('http://localhost:3001/api/line', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${auth.accessToken}`
+          },
+          body: JSON.stringify({is:payload})
+        })
+          .then(response => response.json())
+        break;
+      }
+      case "auth0":
+      default: {
+        const management = new auth0.Management({
+          domain: AUTH_CONFIG.domain,
+          token: auth.accessToken,
+        });
 
-    yield put(addLineSuccess(result.user_metadata));
+        const result = yield promisePatchUserMedadata(management, auth.user.sub, { lines })
+        yield put(addLineSuccess(result.user_metadata));
+      }
+    }
+
+
+
+
   } catch (error) {
     yield put(addLineError(error));
     console.log('Error adding line', error)

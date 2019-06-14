@@ -1,12 +1,19 @@
-import {SET_LANGUAGE} from './settings.actions'
-import {LOAD_STORAGE} from "../auth/auth.actions"
+import {SET_LANGUAGE, SET_API_SOURCE, LOAD_SETTINGS_STORAGE} from './settings.actions'
 
-const settingsReducer = (state = {language: 'nl'}, {type, payload}) => {
+const initialState = {
+  language: 'nl',
+  apiSource: 'delijn',
+  isStarted: false
+}
+
+const settingsReducer = (state = initialState, {type, payload}) => {
   switch (type) {
-    case LOAD_STORAGE: {
+    case LOAD_SETTINGS_STORAGE: {
       return {
         ...state,
         language: localStorage.getItem('language') || state.language,
+        apiSource: localStorage.getItem('api_source') || state.apiSource,
+        storageLoaded: true,
       }
     }
     case SET_LANGUAGE: {
@@ -14,6 +21,13 @@ const settingsReducer = (state = {language: 'nl'}, {type, payload}) => {
       return {
         ...state,
         language: payload,
+      }
+    }
+    case SET_API_SOURCE: {
+      localStorage.setItem('api_source', payload)
+      return {
+        ...state,
+        apiSource: payload,
       }
     }
     default:

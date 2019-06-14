@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { Provider} from 'react-redux'
+import React, {useEffect} from 'react'
+import {Provider, useSelector} from 'react-redux'
 import {Route, Router} from "react-router"
 
 import Header from "./Header/Header"
@@ -8,20 +8,21 @@ import LoggedOut from "./LoggedOut/LoggedOut"
 import Lines from "./Lines/Lines"
 import Theme from "./Theme/Theme"
 
-import {LOGIN_CALLBACK, loadStorage, checkSession} from "./redux/auth/auth.actions"
-import store from './redux/store';
+import {LOGIN_CALLBACK, checkSession, loadAuthStorage} from "./redux/auth/auth.actions"
+import store from './redux/store'
 import history from "./history"
 import Home from "./Home/Home"
 import styled from "styled-components"
+import {settingsStarted} from "./redux/settings/settings.selector"
+import {loadSettingsStorage} from "./redux/settings/settings.actions"
+import {authStarted} from "./redux/auth/auth.selector"
 
 const handleAuthentication = (props) => {
   if (/access_token|id_token|error/.test(props.location.hash)) {
-    store.dispatch({type:LOGIN_CALLBACK, payload: props.history})
+    store.dispatch({type: LOGIN_CALLBACK, payload: props.history})
   }
-  props.history.replace('/loggedout');
+  props.history.replace('/loggedout')
 }
-
-store.dispatch(loadStorage())
 
 const Container = styled.div`
   margin: 20px;
@@ -31,27 +32,38 @@ history.listen((location, action) => {
   store.dispatch(checkSession())
 })
 
-class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <Theme>
-          <Router history={history}>
-            <Route path="/" render={(props) => <Header {...props} />}/>
-            <Container>
-              <Route path="/home" render={(props) => <Home {...props} />}/>
-              <Route path="/lines" render={(props) => <Lines {...props} />}/>
-              <Route path="/loggedout" render={(props) => <LoggedOut {...props} />}/>
-            </Container>
-            <Route path="/callback" render={(props) => {
-              handleAuthentication(props)
-              return <Callback {...props} />
-            }}/>
-          </Router>
-        </Theme>
-      </Provider>
-    );
-  }
+const App = () => (<Provider store={store}>
+  <AppContent />
+</Provider>)
+
+const AppContent = () => {
+  useEffect(() => {
+    store.dispatch(loadAuthStorage())
+    store.dispatch(loadSettingsStorage())
+    store.dispatch(checkSession())
+  }, [])
+
+
+  const started = useSelector(state => state.settings.storageLoaded && state.auth.storageLoaded && state.auth.sessionChecked)
+  const startingUp = !started
+
+  return (
+    <Theme>
+      <Router history={history}>
+        <Route path="/" render={(props) => <Header {...props} />}/>
+        {startingUp && <h1>Starting up</h1>}
+        {started && (<Container>
+          <Route path="/home" render={(props) => <Home {...props} />}/>
+          <Route path="/lines" render={(props) => <Lines {...props} />}/>
+          <Route path="/loggedout" render={(props) => <LoggedOut {...props} />}/>
+        </Container>)}
+        <Route path="/callback" render={(props) => {
+          handleAuthentication(props)
+          return <Callback {...props} />
+        }}/>
+      </Router>
+    </Theme>
+  )
 }
 
 export default App
