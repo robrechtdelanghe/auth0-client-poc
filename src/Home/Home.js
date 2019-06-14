@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components"
 import {useDispatch, useSelector} from "react-redux"
-import {changePassword, checkSession, updateUser} from "../redux/auth/auth.actions"
-import {isAuthenticated, user, expiresAtSelector} from "../redux/auth/auth.selector"
+import {changePassword as createChangePassword, checkSession as createCheckSession, updateUser as createUpdateUser} from "../redux/auth/auth.actions"
+import {isAuthenticated as isAuthenticatedSelector, user as userSelector, expiresAtSelector} from "../redux/auth/auth.selector"
 
 const Button = styled.a`
   padding: 2px 5px;
@@ -24,13 +24,13 @@ const ButtonList = styled.ul`
 `
 const Home = (props) => {
   const dispatch = useDispatch()
-  const user = useSelector(user)
+  const user = useSelector(userSelector)
   const expiresAt =  useSelector(expiresAtSelector)
-  const isAuthenticated = useSelector(isAuthenticated)
+  const isAuthenticated = useSelector(isAuthenticatedSelector)
 
-  const changePassword = () => dispatch(changePassword())
-  const updateUser = () => dispatch(updateUser())
-  const checkSession = () => dispatch(checkSession(true))
+  const changePassword = () => dispatch(createChangePassword())
+  const updateUser = () => dispatch(createUpdateUser())
+  const checkSession = () => dispatch(createCheckSession(true))
 
   return (
     <div>
