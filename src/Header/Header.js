@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
-import {setLanguage, setApi} from "../redux/settings/settings.actions"
+import {setLanguage} from "../redux/settings/settings.actions"
 import {loginStart, logoutStart, startSetApi} from "../redux/auth/auth.actions"
 import {isAuthenticated, nickname} from "../redux/auth/auth.selector"
 
@@ -11,7 +11,7 @@ import {API_SOURCE_AUTH0, API_SOURCE_DELIJN} from "../constants"
 const NavBar = styled.div`
   background-color: ${props => props.theme.cBack};
   color: ${props => props.theme.cFront};
-  padding: 10px;
+  padding: 10px 20px;
   display: flex;
   justify-content: flex-start;
   border-bottom: 1px solid ${props => props.theme.cFront}

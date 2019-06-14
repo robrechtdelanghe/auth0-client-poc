@@ -13,9 +13,7 @@ import store from './redux/store'
 import history from "./history"
 import Home from "./Home/Home"
 import styled from "styled-components"
-import {settingsStarted} from "./redux/settings/settings.selector"
 import {loadSettingsStorage} from "./redux/settings/settings.actions"
-import {authStarted} from "./redux/auth/auth.selector"
 
 const handleAuthentication = (props) => {
   if (/access_token|id_token|error/.test(props.location.hash)) {

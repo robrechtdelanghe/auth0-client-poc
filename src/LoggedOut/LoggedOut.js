@@ -27,8 +27,7 @@ const LoggedOut = (props) => {
       <p>Please <Button onClick={login}>Login</Button> again to use this site,
         {redirectUrl && (<>go back to your <Button onClick={() => {
           props.history.push(redirectUrl)
-        }}>previous page</Button>,</>)}
-        or go to <Button onClick={() => {
+        }}>previous page</Button>,</>)} or go to <Button onClick={() => {
           props.history.push('home')
         }}>Home</Button></p>
     </>
