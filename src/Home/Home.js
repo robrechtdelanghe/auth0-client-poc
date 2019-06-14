@@ -23,8 +23,14 @@ const ButtonList = styled.ul`
   }
 `
 const Home = (props) => {
-  const { user, isAuthenticated, expiresAt } = getState(props)
-  const { changePassword, updateUser, checkSession} = getDispatchers()
+  const dispatch = useDispatch()
+  const user = useSelector(user)
+  const expiresAt =  useSelector(expiresAtSelector)
+  const isAuthenticated = useSelector(isAuthenticated)
+
+  const changePassword = () => dispatch(changePassword())
+  const updateUser = () => dispatch(updateUser())
+  const checkSession = () => dispatch(checkSession(true))
 
   return (
     <div>
@@ -49,7 +55,7 @@ const Home = (props) => {
 }
 
 const Timer = () => {
-  const { expiresAt = Date.now() } = getState()
+  const expiresAt = useSelector(expiresAtSelector) || Date.now()
   const [time, setTime] = useState(useSelector(expiresAtSelector) - Date.now())
 
   useEffect(() => {
@@ -63,17 +69,5 @@ const Timer = () => {
 
   return Math.round(time/1000)
 }
-
-const getState = (props) => ({
-  user: useSelector(user),
-  expiresAt: useSelector(expiresAtSelector),
-  isAuthenticated: useSelector(isAuthenticated),
-})
-
-const getDispatchers = (dispatch = useDispatch()) => ({
-  changePassword: () => dispatch(changePassword()),
-  updateUser: () => dispatch(updateUser()),
-  checkSession: () => dispatch(checkSession(true)),
-})
 
 export default Home

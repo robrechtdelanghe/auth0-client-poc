@@ -17,28 +17,22 @@ const Button = styled.a`
 `
 
 const LoggedOut = (props) => {
-  const { login } = createDispatchers()
-  const { redirectUrl, history } = getState(props)
+  const dispatch = useDispatch()
+  const redirectUrl = useSelector(state => state.auth.redirectUrl)
+  const login = () => dispatch(loginStart())
 
   return (
     <>
       <h2>Logout complete!</h2>
       <p>Please <Button onClick={login}>Login</Button> again to use this site,
         {redirectUrl && (<>go back to your <Button onClick={() => {
-          history.push(redirectUrl)
+          props.history.push(redirectUrl)
         }}>previous page</Button>,</>)}
         or go to <Button onClick={() => {
-          history.push('home')
+          props.history.push('home')
         }}>Home</Button></p>
     </>
   )
 }
-const getState = (props) => ({
-  redirectUrl: useSelector(state => state.auth.redirectUrl),
-  history: props.history,
-})
-const createDispatchers = (dispatch = useDispatch()) => ({
-  login: () => dispatch(loginStart()),
-})
 
 export default LoggedOut
