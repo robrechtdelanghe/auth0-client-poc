@@ -33,7 +33,7 @@ history.listen((location, action) => {
 })
 
 const App = () => (<Provider store={store}>
-  <AppContent />
+  <AppContent/>
 </Provider>)
 
 const AppContent = () => {
@@ -43,7 +43,6 @@ const AppContent = () => {
     store.dispatch(checkSession())
   }, [])
 
-
   const started = useSelector(state => state.settings.storageLoaded && state.auth.storageLoaded && state.auth.sessionChecked)
   const startingUp = !started
 
@@ -51,12 +50,14 @@ const AppContent = () => {
     <Theme>
       <Router history={history}>
         <Route path="/" render={(props) => <Header {...props} />}/>
-        {startingUp && <h1>Starting up</h1>}
-        {started && (<Container>
-          <Route path="/home" render={(props) => <Home {...props} />}/>
-          <Route path="/lines" render={(props) => <Lines {...props} />}/>
-          <Route path="/loggedout" render={(props) => <LoggedOut {...props} />}/>
-        </Container>)}
+        <Container>
+          {startingUp && <h1>Starting up</h1>}
+          {started && (<>
+            <Route path="/home" render={(props) => <Home {...props} />}/>
+            <Route path="/lines" render={(props) => <Lines {...props} />}/>
+            <Route path="/loggedout" render={(props) => <LoggedOut {...props} />}/>
+          </>)}
+        </Container>
         <Route path="/callback" render={(props) => {
           handleAuthentication(props)
           return <Callback {...props} />
