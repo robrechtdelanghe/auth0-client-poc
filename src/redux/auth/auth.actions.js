@@ -19,6 +19,8 @@ export const UPDATE_USER_START = 'UPDATE_USER_START'
 
 export const SET_REDIRECT_URL = 'SET_REDIRECT_URL'
 
+export const START_SET_API = 'START_SET_API'
+
 export const loadAuthStorage = () => ({
   type: LOAD_AUTH_STORAGE
 })
@@ -64,8 +66,9 @@ export const changePassword = () => ({
   type: CHANGE_PASSWORD_START,
 })
 
-export const checkSession = () => ({
+export const checkSession = (forceUpdate) => ({
   type: CHECK_SESSION,
+  payload: { forceUpdate },
 })
 
 export const sessionChecked = () => ({
@@ -79,4 +82,10 @@ export const updateUser = () => ({
 export const setRedirectUrl = (redirectUrl) => ({
   type: SET_REDIRECT_URL,
   payload: redirectUrl,
+})
+
+
+export const startSetApi = (apiSource) => ({
+  type: START_SET_API,
+  payload: apiSource
 })

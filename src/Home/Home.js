@@ -73,7 +73,7 @@ const getState = (props) => ({
 const getDispatchers = (dispatch = useDispatch()) => ({
   changePassword: () => dispatch(changePassword()),
   updateUser: () => dispatch(updateUser()),
-  checkSession: () => dispatch(checkSession()),
+  checkSession: () => dispatch(checkSession(true)),
 })
 
 export default Home

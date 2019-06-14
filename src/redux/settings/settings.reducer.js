@@ -1,8 +1,9 @@
 import {SET_LANGUAGE, SET_API_SOURCE, LOAD_SETTINGS_STORAGE} from './settings.actions'
+import {API_SOURCE_AUTH0} from "../../constants"
 
 const initialState = {
   language: 'nl',
-  apiSource: 'delijn',
+  apiSource: API_SOURCE_AUTH0,
   isStarted: false
 }
 

@@ -2,10 +2,11 @@ import React from 'react'
 import {connect} from 'react-redux'
 
 import {setLanguage, setApi} from "../redux/settings/settings.actions"
-import {loginStart, logoutStart} from "../redux/auth/auth.actions"
+import {loginStart, logoutStart, startSetApi} from "../redux/auth/auth.actions"
 import {isAuthenticated, nickname} from "../redux/auth/auth.selector"
 
 import styled from 'styled-components'
+import {API_SOURCE_AUTH0, API_SOURCE_DELIJN} from "../constants"
 
 const NavBar = styled.div`
   background-color: ${props => props.theme.cBack};
@@ -91,9 +92,9 @@ const Header = (props) => (
       </Select>
     </NavItem>
     <NavItem>
-      <Select onChange={(e) => props.setApi(e.target.value)} value={props.api} width="100px">
-        <option value="delijn">De Lijn</option>
-        <option value="auth0">Auth0</option>
+      <Select onChange={(e) => props.setApi(e.target.value)} value={props.apiSource} width="100px">
+        <option value={API_SOURCE_DELIJN}>De Lijn</option>
+        <option value={API_SOURCE_AUTH0}>Auth0</option>
       </Select>
     </NavItem>
     {!props.isAuthenticated && <Login onClick={props.login}>Login</Login>}
@@ -103,14 +104,14 @@ const Header = (props) => (
 
 const mapStateToProps = (state) => ({
   language: state.settings.language,
-  api: state.settings.api,
+  apiSource: state.settings.apiSource,
   isAuthenticated: isAuthenticated(state),
   nickname: nickname(state),
 })
 
 const mapDispatchToProps = dispatch => ({
   setLang: (language) => dispatch(setLanguage(language)),
-  setApi: (api) => dispatch(setApi(api)),
+  setApi: (api) => dispatch(startSetApi(api)),
   login: () => dispatch(loginStart()),
   logout: (redirectUrl) => dispatch(logoutStart(redirectUrl)),
 })

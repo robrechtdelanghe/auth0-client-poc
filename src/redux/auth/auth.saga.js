@@ -13,8 +13,10 @@ import {
   UPDATE_USER_START,
   setRedirectUrl,
   updateUserInfo,
-  sessionChecked, checkSession,
+  sessionChecked, checkSession, START_SET_API,
 } from './auth.actions'
+import {getApiUrl} from "../../utils/utils"
+import {setApi} from "../settings/settings.actions"
 
 function* startLoginSaga() {
   try {
@@ -70,26 +72,20 @@ function* startChangePassword() {
   }
 }
 
-function* startCheckSession() {
+function* startCheckSession({ payload }) {
   try {
-    const { auth } = yield select()
+    const { auth, settings } = yield select()
 
-    if (1*auth.expiresAt < Date.now()) {
-      const checkResult = yield auth.auth0.checkSession({
-        scope: 'openid profile email update:current_user_metadata user_metadata'
-      })
-      yield put(updateAuth(checkResult));
-      yield put(sessionChecked())
-      return
-    }
-
-    if (1*auth.expiresAt < (Date.now() + (45 * 1000))) {
-      const checkResult = yield auth.auth0.checkSession({
-        scope: 'openid profile email update:current_user_metadata user_metadata'
-      })
-      yield put(updateAuth(checkResult));
-      yield put(sessionChecked())
-      return
+    if (auth.accessToken) {
+      if ((payload && payload.forceUpdate) || 1 * auth.expiresAt < (Date.now() + (45 * 1000))) {
+        const checkResult = yield auth.auth0.checkSession({
+          scope: 'openid profile email update:current_user_metadata user_metadata',
+          audience: getApiUrl(settings.apiSource),
+        })
+        yield put(updateAuth(checkResult));
+        yield put(sessionChecked())
+        return
+      }
     }
 
     yield put(sessionChecked())
@@ -109,6 +105,16 @@ function* startUpdateUser() {
   } catch (error) {
     yield put(checkSession(error));
     console.warn('Error updating user data, check session', error)
+  }
+}
+
+function* startSetApi({ payload }) {
+  try {
+
+    yield put(setApi(payload))
+    yield put(checkSession(true))
+  } catch (error) {
+    console.error('Error changing api sources', error)
   }
 }
 
@@ -134,4 +140,8 @@ export function* watchCheckSession() {
 
 export function* watchUpdateUser() {
   yield takeEvery(UPDATE_USER_START, startUpdateUser);
+}
+
+export function* watchStartSetApi() {
+  yield takeEvery(START_SET_API, startSetApi);
 }

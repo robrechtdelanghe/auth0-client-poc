@@ -11,8 +11,10 @@ import {
 } from './auth.actions'
 import {ADD_LINE_SUCCESS, DELETE_LINE_SUCCESS} from './../data/data.actions'
 import {createWebAuthPromise} from "./WebAuthPromise"
+import {getApiUrl} from "../../utils/utils"
+import {API_SOURCE_AUTH0} from "../../constants"
 
-const auth0 = createWebAuthPromise();
+const auth0 = createWebAuthPromise({audience: getApiUrl(API_SOURCE_AUTH0)});
 
 const authReducer = (state = { auth0 }, {type, payload}) => {
   switch (type) {
@@ -28,16 +30,16 @@ const authReducer = (state = { auth0 }, {type, payload}) => {
     }
     case UPDATE_AUTH: {
       const expiresAt = (payload.expiresIn * 1000) + new Date().getTime()
-      const userInfo = payload.idTokenPayload
+      const user = payload.idTokenPayload
 
       localStorage.setItem('access_token', payload.accessToken)
       localStorage.setItem('id_token', payload.idToken)
       localStorage.setItem('expires_at', JSON.stringify(expiresAt))
-      localStorage.setItem('user_info', JSON.stringify(getUserInfo(userInfo)))
+      localStorage.setItem('user_info', JSON.stringify(getUserInfo(user)))
       return {
         ...state,
         expiresAt,
-        user: payload.idTokenPayload,
+        user,
         accessToken: payload.accessToken,
       }
     }
@@ -69,23 +71,24 @@ const authReducer = (state = { auth0 }, {type, payload}) => {
       return {...state}
     }
     case ADD_LINE_SUCCESS: {
-      const userInfo = JSON.parse(localStorage.getItem('user_info'))
-      userInfo.user_metadata = payload;
-      localStorage.setItem('user_info', JSON.stringify(userInfo))
+      console.log(payload)
+      const user = JSON.parse(localStorage.getItem('user_info'))
+      user.user_metadata = payload;
+      localStorage.setItem('user_info', JSON.stringify(user))
 
       return {
         ...state,
-        userInfo,
+        user,
       }
     }
     case DELETE_LINE_SUCCESS: {
-      const userInfo = JSON.parse(localStorage.getItem('user_info'))
-      userInfo.user_metadata = payload;
-      localStorage.setItem('user_info', JSON.stringify(userInfo))
+      const user = JSON.parse(localStorage.getItem('user_info'))
+      user.user_metadata = payload;
+      localStorage.setItem('user_info', JSON.stringify(user))
 
       return {
         ...state,
-        userInfo,
+        user,
       }
     }
     case CHANGE_PASSWORD_START: {
@@ -111,10 +114,10 @@ const authReducer = (state = { auth0 }, {type, payload}) => {
   }
 }
 
-function getUserInfo(userInfo) {
-  userInfo.user_metadata = userInfo['https://www.delijn.be/metadata']
-  delete userInfo['https://www.delijn.be/metadata']
-  return userInfo
+function getUserInfo(user) {
+  user.user_metadata = user['https://www.delijn.be/metadata']
+  delete user['https://www.delijn.be/metadata']
+  return user
 }
 
 export default authReducer

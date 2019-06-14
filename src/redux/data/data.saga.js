@@ -7,6 +7,7 @@ import {
 } from './data.actions'
 import auth0 from "auth0-js"
 import {AUTH_CONFIG} from "../auth/auth.variables"
+import {API_DELIJN, API_SOURCE_AUTH0, API_SOURCE_DELIJN} from "../../constants"
 
 function* addLine2({payload}) {
   try {
@@ -29,8 +30,9 @@ function* addLine({payload}) {
     }
 
     switch (settings.apiSource) {
-      case "delijn": {
-        const json = yield fetch('http://localhost:3001/api/line', {
+      case API_SOURCE_DELIJN: {
+        console.log('add line delijn')
+        const json = yield fetch(`${API_DELIJN}/api/line`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -41,7 +43,8 @@ function* addLine({payload}) {
           .then(response => response.json())
         break;
       }
-      case "auth0":
+      case API_SOURCE_AUTH0:
+        console.log('add line auth0')
       default: {
         const management = new auth0.Management({
           domain: AUTH_CONFIG.domain,
