@@ -22,7 +22,7 @@ function* addLine({payload}) {
   try {
     const { auth, settings } = yield select()
 
-    const lines = auth.user.user_metadata.lines || {}
+    const lines = JSON.parse(JSON.stringify(auth.user.user_metadata.lines)) || {}
     lines[payload.linenumber] = {
       id: payload.linenumber,
       subscribed: payload.subscribed || false,
