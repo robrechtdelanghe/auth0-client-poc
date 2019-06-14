@@ -8,6 +8,8 @@ import {
 import auth0 from "auth0-js"
 import {AUTH_CONFIG} from "../auth/auth.variables"
 import {API_DELIJN, API_SOURCE_AUTH0, API_SOURCE_DELIJN} from "../../constants"
+import {updateLines as updateLinesDelijn} from "./data.api.delijn"
+import {updateLines as updateLinesAuth0} from "./data.api.auth0"
 
 function* addLine2({payload}) {
   try {
@@ -32,32 +34,19 @@ function* addLine({payload}) {
     switch (settings.apiSource) {
       case API_SOURCE_DELIJN: {
         console.log('add line delijn')
-        const json = yield fetch(`${API_DELIJN}/api/line`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${auth.accessToken}`
-          },
-          body: JSON.stringify({is:payload})
-        })
-          .then(response => response.json())
+        const resultLines = yield updateLinesDelijn(auth, lines)
+        console.log(resultLines)
+        yield put(addLineSuccess(lines));
         break;
       }
       case API_SOURCE_AUTH0:
         console.log('add line auth0')
       default: {
-        const management = new auth0.Management({
-          domain: AUTH_CONFIG.domain,
-          token: auth.accessToken,
-        });
-
-        const result = yield promisePatchUserMedadata(management, auth.user.sub, { lines })
-        yield put(addLineSuccess(result.user_metadata));
+        const resultLines = updateLinesAuth0(auth, lines)
+        console.log(resultLines)
+        yield put(addLineSuccess(lines));
       }
     }
-
-
-
 
   } catch (error) {
     yield put(addLineError(error));
@@ -67,19 +56,28 @@ function* addLine({payload}) {
 
 function* deleteLine({payload}) {
   try {
-    const { auth } = yield select()
+    const { auth, settings } = yield select()
 
-    const management = new auth0.Management({
-      domain: AUTH_CONFIG.domain,
-      token: auth.accessToken,
-    });
-
-    const lines = auth.user.user_metadata.lines || {}
+    const lines = JSON.parse(JSON.stringify(auth.user.user_metadata.lines)) || {}
     delete lines[payload]
 
-    const result = yield promisePatchUserMedadata(management, auth.user.sub, { lines })
+    switch (settings.apiSource) {
+      case API_SOURCE_DELIJN: {
+        console.log('remove line delijn')
+        const resultLines = yield updateLinesDelijn(auth, lines)
+        console.log(resultLines)
+        yield put(deleteLineSuccess(lines));
+        break;
+      }
+      case API_SOURCE_AUTH0:
+        console.log('remove line auth0')
+      default: {
+        const resultLines = updateLinesAuth0(auth, lines)
+        console.log(resultLines)
+        yield put(deleteLineSuccess(lines));
+      }
+    }
 
-    yield put(deleteLineSuccess(result.user_metadata));
   } catch (error) {
     yield put(deleteLineError(error));
     console.log('Error adding line', error)

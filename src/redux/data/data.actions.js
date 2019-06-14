@@ -11,9 +11,9 @@ export const addLine = (linenumber, subscribed) => ({
   payload: { linenumber, subscribed },
 })
 
-export const addLineSuccess = (user_metadata) => ({
+export const addLineSuccess = (lines) => ({
   type: ADD_LINE_SUCCESS,
-  payload: user_metadata,
+  payload: lines,
 })
 
 export const addLineError = (error) => ({
@@ -26,9 +26,9 @@ export const deleteLine = (linenumber) => ({
   payload: linenumber,
 })
 
-export const deleteLineSuccess = (user_metadata) => ({
+export const deleteLineSuccess = (lines) => ({
   type: DELETE_LINE_SUCCESS,
-  payload: user_metadata,
+  payload: lines,
 })
 
 export const deleteLineError = (error) => ({
