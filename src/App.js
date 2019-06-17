@@ -14,6 +14,7 @@ import history from "./history"
 import Home from "./Home/Home"
 import styled from "styled-components"
 import {loadSettingsStorage} from "./redux/settings/settings.actions"
+import Toast from "./Toast/Toast"
 
 const handleAuthentication = (props) => {
   if (/access_token|id_token|error/.test(props.location.hash)) {
@@ -61,6 +62,7 @@ const AppContent = () => {
           return <Callback {...props} />
         }}/>
       </Router>
+      <Toast/>
     </Theme>
   )
 }

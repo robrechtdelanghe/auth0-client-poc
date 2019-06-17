@@ -17,6 +17,7 @@ import {
 } from './auth.actions'
 import {getApiUrl} from "../../utils/utils"
 import {setApi} from "../settings/settings.actions"
+import {createToast} from "../toast/toast.actions"
 
 function* startLoginSaga() {
   try {
@@ -67,6 +68,7 @@ function* startChangePassword() {
       email: auth.user.email,
     });
 
+    yield put(createToast(result))
     console.log(result)
   } catch (error) {
     console.error('Error logging out the user', error)
