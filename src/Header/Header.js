@@ -80,7 +80,7 @@ const Select = styled.select`
 
 const Header = (props) => (
   <NavBar>
-    <Brand onClick={() => props.history.push(`/home`)}><Logo src="/delijn_logo.png" alt="logo"/>De Lijn - Auth0</Brand>
+    <Brand onClick={() => props.history.push(`/`)}><Logo src="/delijn_logo.png" alt="logo"/>De Lijn - Auth0</Brand>
     { props.isAuthenticated && <NavItem><Link onClick={() => props.history.push(`/lines`)}>Lines</Link></NavItem>}
     <Spacer/>
     <NavItem>
@@ -92,7 +92,7 @@ const Header = (props) => (
       </Select>
     </NavItem>
     <NavItem>
-      <Select onChange={(e) => props.setApi(e.target.value)} value={props.apiSource} width="100px">
+      <Select onChange={(e) => props.setApi(e.target.value)} value={props.apiSource} width="75px">
         <option value={API_SOURCE_DELIJN}>De Lijn</option>
         <option value={API_SOURCE_AUTH0}>Auth0</option>
       </Select>

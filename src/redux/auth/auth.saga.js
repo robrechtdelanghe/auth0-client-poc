@@ -36,11 +36,11 @@ function* loginCallbackSaga({ payload: history}) {
     const { auth } = yield select();
     const authResult = yield auth.auth0.parseHash()
     yield put(updateAuth(authResult));
-    history.replace('/home');
+    history.replace('/');
   } catch (error) {
     console.error('Error handling login', error);
     yield put(loginError(error));
-    history.replace('/home');
+    history.replace('/');
   }
 }
 

@@ -51,7 +51,7 @@ const AppContent = () => {
         <Container>
           {startingUp && <h1>Starting up</h1>}
           {started && (<>
-            <Route path="/home" render={(props) => <Home {...props} />}/>
+            <Route path="/" exact render={(props) => <Home {...props} />}/>
             <Route path="/lines" render={(props) => <Lines {...props} />}/>
             <Route path="/loggedout" render={(props) => <LoggedOut {...props} />}/>
           </>)}
