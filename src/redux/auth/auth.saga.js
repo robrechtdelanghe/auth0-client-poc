@@ -23,7 +23,8 @@ function* startLoginSaga() {
     const { auth, settings } = yield select();
     auth.auth0.authorize({
       scope: 'openid profile email update:current_user_metadata user_metadata',
-      language: settings.language
+      language: settings.language,
+      audience: getApiUrl(settings.apiSource),
     });
   } catch (error) {
     yield put(logoutError(error));
