@@ -1,4 +1,4 @@
-import {put, select, takeEvery} from 'redux-saga/effects'
+import { put, select, takeEvery, all } from 'redux-saga/effects'
 
 import {ADD_LINE_START, addLineError, DELETE_LINE_START, deleteLineError, deleteLineSuccess,} from './data.actions'
 import {API_SOURCE_AUTH0, API_SOURCE_DELIJN} from "../../constants"
@@ -59,4 +59,11 @@ export function* watchAddLine() {
 
 export function* watchDeleteLine() {
   yield takeEvery(DELETE_LINE_START, deleteLine);
+}
+
+export default function* dataSagas() {
+  yield all([
+    watchAddLine(),
+    watchDeleteLine(),
+  ])
 }

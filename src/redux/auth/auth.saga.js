@@ -1,4 +1,4 @@
-import { select, put, takeEvery } from 'redux-saga/effects';
+import { select, put, takeEvery, all } from 'redux-saga/effects';
 
 import {
   LOGIN_START,
@@ -147,4 +147,16 @@ export function* watchUpdateUser() {
 
 export function* watchStartSetApi() {
   yield takeEvery(START_SET_API, startSetApi);
+}
+
+export default function* authSagas() {
+  yield all([
+    watchStartLogin(),
+    watchLoginCallback(),
+    watchStartLogout(),
+    watchChangePassword(),
+    watchCheckSession(),
+    watchUpdateUser(),
+    watchStartSetApi(),
+  ])
 }

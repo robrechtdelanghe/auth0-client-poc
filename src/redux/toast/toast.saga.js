@@ -1,4 +1,4 @@
-import {put, takeLatest} from 'redux-saga/effects'
+import { all, put, takeLatest } from 'redux-saga/effects'
 
 import {clearToast, CREATE_TOAST, setToastMessage,} from './toast.actions'
 import {wait} from "../../utils/utils"
@@ -16,4 +16,11 @@ function* createToast({payload}) {
 
 export function* watchCreateToast() {
   yield takeLatest(CREATE_TOAST, createToast);
+}
+
+export default function* toastSagas() {
+  yield all([
+    watchCreateToast()
+  ])
+
 }
