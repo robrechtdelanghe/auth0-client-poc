@@ -78,32 +78,35 @@ const Delete = styled.button`
   cursor: pointer;
 `
 
-const Lines = (props) => (
-  <>
-    {props.isAuthenticated && (
-      <>
-      <h2>Add or remove lines</h2>
-        <Form onSubmit={(e) => {
-          e.preventDefault()
-          props.addLine(e.target.elements['line'].value)
-        }}>
-          <InputWrapper><InputText name="line" type="text"/><InputButton type="submit">Add</InputButton></InputWrapper>
-        </Form>
-        <LineList>
-          {props.lines.map((line => (
-            <LineRow key={line.id}>
-              <Line>{line.id}</Line>
-              <Sub
-                onClick={() => props.addLine(line.id, !line.subscribed)}>{line.subscribed ? 'unsubscribe' : 'subscribe'}</Sub>
-              <Delete onClick={() => props.deleteLine(line.id)}>X</Delete>
-            </LineRow>
-          )))}
-        </LineList>
-      </>
-    )}
-    {!props.isAuthenticated && (<h2>Not logged in</h2>)}
-  </>
-)
+const Lines = (props) =>  {
+
+  return (
+    <>
+      {props.isAuthenticated && (
+        <>
+          <h2>Add or remove lines</h2>
+          <Form onSubmit={(e) => {
+            e.preventDefault()
+            props.addLine(e.target.elements['line'].value)
+          }}>
+            <InputWrapper><InputText name="line" type="text"/><InputButton type="submit">Add</InputButton></InputWrapper>
+          </Form>
+          <LineList>
+            {props.lines.map(line => (
+              <LineRow key={line.id}>
+                <Line>{line.id}</Line>
+                <Sub
+                  onClick={() => props.addLine(line.id, !line.subscribed)}>{line.subscribed ? 'unsubscribe' : 'subscribe'}</Sub>
+                <Delete onClick={() => props.deleteLine(line.id)}>X</Delete>
+              </LineRow>
+            ))}
+          </LineList>
+        </>
+      )}
+      {!props.isAuthenticated && (<h2>Not logged in</h2>)}
+    </>
+  )
+}
 
 const mapStateToProps = state => ({
   lines: lines(state),

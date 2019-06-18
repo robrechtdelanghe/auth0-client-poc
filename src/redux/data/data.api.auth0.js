@@ -9,7 +9,7 @@ export function* updateLines(auth, lines) {
 
   const result = yield promisePatchUserMedadata(management, auth.user.sub, { lines })
 
-  return result.user_metadata;
+  return result;
 }
 
 function promisePatchUserMedadata(management, userid, metadata) {

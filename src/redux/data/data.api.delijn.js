@@ -2,7 +2,7 @@ import axios from 'axios'
 import {API_DELIJN} from "../../constants"
 
 export function* updateLines(auth, lines) {
-  const response = yield axios.post(`${API_DELIJN}/api/lines`, lines, {
+  const response = yield axios.post(`${API_DELIJN}/users/user/lines`, lines, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${auth.accessToken}`
@@ -11,5 +11,10 @@ export function* updateLines(auth, lines) {
   if (response.status !== 200) {
     throw response
   }
-  return response.data
+
+  const user = response.data
+  user.user_metadata = user.userMetadata
+  delete user.userMetadata
+
+  return user
 }

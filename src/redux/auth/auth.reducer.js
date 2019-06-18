@@ -71,7 +71,6 @@ const authReducer = (state = { auth0 }, {type, payload}) => {
       return {...state}
     }
     case ADD_LINE_SUCCESS: {
-      console.log(payload)
       const user = state.user
       const userMetadata = user.user_metadata || {}
 
@@ -86,7 +85,7 @@ const authReducer = (state = { auth0 }, {type, payload}) => {
     case DELETE_LINE_SUCCESS: {
       const user = state.user
       const userMetadata = user.user_metadata || {}
-      userMetadata.lines = payload;
+      userMetadata.lines = payload
 
       localStorage.setItem('user_info', JSON.stringify(user))
 
